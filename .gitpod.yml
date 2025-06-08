@@ -1,5 +1,8 @@
 
 tasks:
+  - name: utils
+    before:
+      sudo apt-get install tree
   - name: Aws CLI
     env:
       AWS_CLI_AUTO_PROMPT: on-partial

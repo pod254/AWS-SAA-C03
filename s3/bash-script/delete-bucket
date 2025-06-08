@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+echo "Deleting bucket and all its contents..."
+
+if [ -z "$1" ]; then 
+   echo "There needs to be a bucket name"
+   exit 1
+fi
+
+BUCKET_NAME=$1
+REGION=us-east-1
+
+# First: empty the bucket
+echo "Emptying bucket $BUCKET_NAME..."
+aws s3 rm "s3://$BUCKET_NAME" --recursive --region "$REGION"
+
+# Then: delete the bucket
+echo "Deleting bucket $BUCKET_NAME..."
+aws s3api delete-bucket \
+  --bucket "$BUCKET_NAME" \
+  --region "$REGION"
+
+echo "Bucket $BUCKET_NAME deleted."

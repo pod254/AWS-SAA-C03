@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+if [ -z "$1" ]; then
+  echo "Usage: $0 <bucket-name>"
+  exit 1
+fi
+
+BUCKET_NAME=$1
+REGION=us-east-1
+
+# Create random number between 5 and 10
+NUM_FILES=$((RANDOM % 6 + 5))
+
+echo "Creating $NUM_FILES random files and uploading to s3://$BUCKET_NAME"
+
+# Create a temporary directory to store files
+TMP_DIR=$(mktemp -d)
+
+for ((i = 1; i <= NUM_FILES; i++)); do
+  FILE_NAME="object_$RANDOM.txt"
+  FILE_PATH="$TMP_DIR/$FILE_NAME"
+  
+  # Generate random content
+  head /dev/urandom | tr -dc A-Za-z0-9 | head -c 100 > "$FILE_PATH"
+
+  echo "Uploading $FILE_NAME to S3..."
+
+  aws s3api put-object \
+    --bucket "$BUCKET_NAME" \
+    --key "$FILE_NAME" \
+    --body "$FILE_PATH" \
+    --content-type text/plain
+done
+
+# Cleanup
+rm -r "$TMP_DIR"
+
+echo "Done."
